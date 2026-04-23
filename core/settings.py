@@ -28,6 +28,9 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://lo
 # Application definition
 
 INSTALLED_APPS = [
+  
+    'videos',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
