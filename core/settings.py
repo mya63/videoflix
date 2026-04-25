@@ -28,18 +28,16 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://lo
 # Application definition
 
 INSTALLED_APPS = [
-  
-    'videos',
-    
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django_rq',
-]
+    "rest_framework",
+    "videos",
 
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -77,14 +75,11 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME", default="videoflix_db"),
-        "USER": os.environ.get("DB_USER", default="videoflix_user"),
-        "PASSWORD": os.environ.get("DB_PASSWORD", default="supersecretpassword"),
-        "HOST": os.environ.get("DB_HOST", default="db"),
-        "PORT": os.environ.get("DB_PORT", default=5432)
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
 
 CACHES = {
     "default": {
