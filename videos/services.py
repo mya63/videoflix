@@ -37,7 +37,7 @@ def convert_to_hls(video_path):
             "ffmpeg",
             "-i",
             video_path,
-            "-codec:",
+            "-codec",
             "copy",
             "-start_number",
             "0",
