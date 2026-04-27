@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import Video
 
 
-class VideoSerializer(serializers.ModelSerializer):
+class VideoListSerializer(serializers.ModelSerializer):
     thumbnail_url = serializers.SerializerMethodField()
 
     class Meta:
@@ -15,7 +15,6 @@ class VideoSerializer(serializers.ModelSerializer):
             "thumbnail_url",
             "category",
         ]
-        read_only_fields = ["id", "created_at", "thumbnail_url"]
 
     def get_thumbnail_url(self, obj):
         request = self.context.get("request")
@@ -27,3 +26,14 @@ class VideoSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.thumbnail.url)
 
         return obj.thumbnail.url
+
+
+class VideoCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = [
+            "title",
+            "description",
+            "category",
+            "video_file",
+        ]

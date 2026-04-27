@@ -8,20 +8,24 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 from .models import Video
-from .serializers import VideoSerializer
+from .serializers import VideoCreateSerializer, VideoListSerializer
 from .tasks import process_video
 
 
 class VideoListCreateView(generics.ListCreateAPIView):
     queryset = Video.objects.all().order_by("-created_at")
-    serializer_class = VideoSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method == "POST":
+            return VideoCreateSerializer
+
+        return VideoListSerializer
 
     def perform_create(self, serializer):
         video = serializer.save()
         queue = django_rq.get_queue("default")
         queue.enqueue(process_video, video.id)
-
 
 class HLSPlaylistView(APIView):
     permission_classes = [IsAuthenticated]
