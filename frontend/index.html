@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Videoflix Player</title>
+</head>
+<body>
+
+  <h2>Mein Video</h2>
+
+  <video id="video" controls width="800"></video>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+  <script>
+    const video = document.getElementById("video");
+
+    const videoSrc = "http://localhost:8000/media/videos/277042_medium_8Brxq9P_720p_hls/index.m3u8";
+
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+    } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+      video.src = videoSrc;
+    }
+  </script>
+
+</body>
+</html>
