@@ -26,16 +26,26 @@ def convert_to_hls_quality(video_path, quality_name, height):
     os.makedirs(output_dir, exist_ok=True)
 
     output_path = os.path.join(output_dir, "index.m3u8")
+    segment_path = os.path.join(output_dir, "index%d.ts")
 
     subprocess.run(
         [
-            "ffmpeg", "-i", video_path,
+            "ffmpeg",
+            "-y",
+            "-i", video_path,
             "-vf", f"scale=-2:{height}",
             "-c:v", "libx264",
+            "-profile:v", "main",
+            "-crf", "20",
+            "-sc_threshold", "0",
+            "-g", "48",
+            "-keyint_min", "48",
             "-c:a", "aac",
+            "-ar", "48000",
             "-start_number", "0",
-            "-hls_time", "10",
-            "-hls_list_size", "0",
+            "-hls_time", "4",
+            "-hls_playlist_type", "vod",
+            "-hls_segment_filename", segment_path,
             "-f", "hls",
             output_path,
         ],
