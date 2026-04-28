@@ -21,6 +21,7 @@ import django_rq
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("videos.urls")),
+    path("auth/", include("authentication.urls")),
     path("django-rq/", include("django_rq.urls")),
 ]
 

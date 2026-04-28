@@ -30,8 +30,10 @@ CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", default="http://lo
 INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
+    "rest_framework_simplejwt",
     "videos",
     "django_rq",
+    "authentication",
     
 
     "django.contrib.admin",
@@ -155,3 +157,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+  ),
+}
