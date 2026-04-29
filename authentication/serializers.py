@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-
+from django.contrib.auth import authenticate
 
 class RegisterSerializer(serializers.ModelSerializer):
     confirmed_password = serializers.CharField(write_only=True)
@@ -37,3 +37,21 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
         return user
+    
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        user = authenticate(
+            username=attrs["email"],
+            password=attrs["password"],
+        )
+
+        if not user:
+            raise serializers.ValidationError(
+                {"detail": "Invalid login credentials."}
+            )
+
+        attrs["user"] = user
+        return attrs
