@@ -35,6 +35,7 @@ class LoginView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.validated_data["user"]
+
         refresh = RefreshToken.for_user(user)
 
         response = Response(
@@ -48,19 +49,17 @@ class LoginView(generics.GenericAPIView):
             status=status.HTTP_200_OK,
         )
 
+        # 🔥 Cookies setzen (wichtig für Doku!)
         response.set_cookie(
             key="access_token",
             value=str(refresh.access_token),
-            httponly=True,
-            secure=False,
-            samesite="Lax",
+            httponly=True
         )
+
         response.set_cookie(
             key="refresh_token",
             value=str(refresh),
-            httponly=True,
-            secure=False,
-            samesite="Lax",
+            httponly=True
         )
 
         return response
