@@ -28,7 +28,7 @@ class VideoListCreateView(generics.ListCreateAPIView):
         queue.enqueue(process_video, video.id)
 
 class HLSPlaylistView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     def get(self, request, movie_id, resolution):
         video = generics.get_object_or_404(Video, id=movie_id)
@@ -41,7 +41,7 @@ class HLSPlaylistView(APIView):
 
 
 class HLSSegmentView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     def get(self, request, movie_id, resolution, segment):
         video = generics.get_object_or_404(Video, id=movie_id)
