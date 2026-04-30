@@ -12,6 +12,7 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
     permission_classes = []
+    authentication_classes = []
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -38,6 +39,7 @@ class RegisterView(generics.CreateAPIView):
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
     permission_classes = []
+    authentication_classes = []
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -75,6 +77,7 @@ class LoginView(generics.GenericAPIView):
 class LogoutView(generics.GenericAPIView):
     serializer_class = None
     permission_classes = []
+    authentication_classes = []
 
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
@@ -104,6 +107,7 @@ class LogoutView(generics.GenericAPIView):
 class CookieTokenRefreshView(generics.GenericAPIView):
     serializer_class = None
     permission_classes = []
+    authentication_classes = []
 
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
@@ -135,6 +139,7 @@ class CookieTokenRefreshView(generics.GenericAPIView):
 class ActivateView(generics.GenericAPIView):
     permission_classes = []
     serializer_class = None
+    authentication_classes = []
 
     def get(self, request, uidb64, token):
         try:
