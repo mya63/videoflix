@@ -108,7 +108,10 @@ class CookieTokenRefreshView(generics.GenericAPIView):
         refresh = RefreshToken(refresh_token)
 
         response = Response(
-            {"detail": "Token refreshed successfully."},
+            {
+                "detail": "Token refreshed",
+                "access": str(refresh.access_token),
+            },
             status=status.HTTP_200_OK,
         )
 
