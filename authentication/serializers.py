@@ -1,8 +1,13 @@
+from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from django.contrib.auth import authenticate
+
 
 class RegisterSerializer(serializers.ModelSerializer):
+    """
+    Validates registration data and creates an inactive user account.
+    """
+
     confirmed_password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -13,6 +18,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
+        """
+        Checks matching passwords and prevents duplicate email registration.
+        """
+
         if attrs["password"] != attrs["confirmed_password"]:
             raise serializers.ValidationError(
                 {"confirmed_password": "Passwords do not match."}
@@ -26,6 +35,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        """
+        Creates a new inactive user with the email as username.
+        """
+
         validated_data.pop("confirmed_password")
         email = validated_data["email"]
 
@@ -37,12 +50,21 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
 
         return user
-    
+
+
 class LoginSerializer(serializers.Serializer):
+    """
+    Validates login credentials for email and password authentication.
+    """
+
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
+        """
+        Authenticates the user and returns the user object if credentials are valid.
+        """
+
         user = authenticate(
             username=attrs["email"],
             password=attrs["password"],

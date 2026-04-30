@@ -7,12 +7,20 @@ from .services import create_thumbnail, convert_to_hls
 
 
 def get_media_path(file_path):
+    """
+    Converts an absolute media file path into a public media URL.
+    """
+
     return settings.MEDIA_URL + os.path.relpath(
         file_path, settings.MEDIA_ROOT
     ).replace("\\", "/")
 
 
 def process_video(video_id):
+    """
+    Creates a thumbnail, converts the video to HLS and saves generated file paths.
+    """
+
     video = Video.objects.get(id=video_id)
     video_path = video.video_file.path
 

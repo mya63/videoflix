@@ -2,6 +2,10 @@ from django.db import models
 
 
 class Video(models.Model):
+    """
+    Stores uploaded videos and generated HLS file references.
+    """
+
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     category = models.CharField(max_length=100, blank=True)
@@ -17,4 +21,8 @@ class Video(models.Model):
     hls_1080p = models.CharField(max_length=500, blank=True, null=True)
 
     def __str__(self):
+        """
+        Returns the video title as the readable model representation.
+        """
+
         return self.title

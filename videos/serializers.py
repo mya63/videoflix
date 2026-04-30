@@ -1,8 +1,13 @@
 from rest_framework import serializers
+
 from .models import Video
 
 
 class VideoListSerializer(serializers.ModelSerializer):
+    """
+    Serializes video data for listing videos in the frontend.
+    """
+
     thumbnail_url = serializers.SerializerMethodField()
 
     class Meta:
@@ -17,6 +22,10 @@ class VideoListSerializer(serializers.ModelSerializer):
         ]
 
     def get_thumbnail_url(self, obj):
+        """
+        Returns the absolute thumbnail URL if a request context is available.
+        """
+
         request = self.context.get("request")
 
         if not obj.thumbnail:
@@ -29,6 +38,10 @@ class VideoListSerializer(serializers.ModelSerializer):
 
 
 class VideoCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializes uploaded video data for creating new video entries.
+    """
+
     class Meta:
         model = Video
         fields = [
