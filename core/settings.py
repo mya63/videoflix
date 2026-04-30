@@ -31,10 +31,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     "videos",
     "django_rq",
-    "authentication",
-    
+    "authentication",    
 
     "django.contrib.admin",
     "django.contrib.auth",

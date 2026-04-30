@@ -35,7 +35,6 @@ class LoginView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.validated_data["user"]
-
         refresh = RefreshToken.for_user(user)
 
         response = Response(
@@ -49,17 +48,74 @@ class LoginView(generics.GenericAPIView):
             status=status.HTTP_200_OK,
         )
 
-        # 🔥 Cookies setzen (wichtig für Doku!)
         response.set_cookie(
             key="access_token",
             value=str(refresh.access_token),
-            httponly=True
+            httponly=True,
         )
 
         response.set_cookie(
             key="refresh_token",
             value=str(refresh),
-            httponly=True
+            httponly=True,
+        )
+
+        return response
+
+
+class LogoutView(generics.GenericAPIView):
+    serializer_class = None
+    permission_classes = []
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response(
+                {"detail": "Refresh token missing."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        token = RefreshToken(refresh_token)
+        token.blacklist()
+
+        response = Response(
+            {
+                "detail": "Logout successful. All tokens will be deleted. Refresh token is now invalid."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+
+        return response
+
+
+class CookieTokenRefreshView(generics.GenericAPIView):
+    serializer_class = None
+    permission_classes = []
+
+    def post(self, request):
+        refresh_token = request.COOKIES.get("refresh_token")
+
+        if not refresh_token:
+            return Response(
+                {"detail": "Refresh token missing."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        refresh = RefreshToken(refresh_token)
+
+        response = Response(
+            {"detail": "Token refreshed successfully."},
+            status=status.HTTP_200_OK,
+        )
+
+        response.set_cookie(
+            key="access_token",
+            value=str(refresh.access_token),
+            httponly=True,
         )
 
         return response
