@@ -4,6 +4,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .serializers import LoginSerializer, RegisterSerializer
 
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -14,13 +18,18 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
         return Response(
             {
                 "user": {
                     "id": user.id,
                     "email": user.email,
                 },
-                "token": "activation_token",
+                "token": token,
+                "uidb64": uidb64,
+                "activation_link": f"/api/activate/{uidb64}/{token}/",
             },
             status=status.HTTP_201_CREATED,
         )
@@ -122,3 +131,31 @@ class CookieTokenRefreshView(generics.GenericAPIView):
         )
 
         return response
+    
+class ActivateView(generics.GenericAPIView):
+    permission_classes = []
+    serializer_class = None
+
+    def get(self, request, uidb64, token):
+        try:
+            user_id = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=user_id)
+        except (User.DoesNotExist, ValueError, TypeError):
+            return Response(
+                {"detail": "Activation link is invalid."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not default_token_generator.check_token(user, token):
+            return Response(
+                {"detail": "Activation link is invalid."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user.is_active = True
+        user.save()
+
+        return Response(
+            {"detail": "Account activated successfully."},
+            status=status.HTTP_200_OK,
+        )
