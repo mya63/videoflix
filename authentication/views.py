@@ -4,7 +4,11 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rq import queue
+from authentication.tasks import send_activation_email
 from rest_framework_simplejwt.tokens import RefreshToken
+import django_rq
+from .tasks import send_activation_email
 
 from .serializers import LoginSerializer, RegisterSerializer
 
@@ -29,6 +33,12 @@ class RegisterView(generics.CreateAPIView):
 
         uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
+        activation_link = request.build_absolute_uri(
+            f"/api/activate/{uidb64}/{token}/"
+    )
+        
+        queue = django_rq.get_queue("default")
+        queue.enqueue(send_activation_email, user.email, activation_link)
 
         return Response(
             {
