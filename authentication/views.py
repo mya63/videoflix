@@ -9,6 +9,7 @@ from authentication.tasks import send_activation_email
 from rest_framework_simplejwt.tokens import RefreshToken
 import django_rq
 from .tasks import send_activation_email
+from django.shortcuts import redirect
 
 from .serializers import LoginSerializer, RegisterSerializer
 
@@ -211,7 +212,5 @@ class ActivateView(generics.GenericAPIView):
         user.is_active = True
         user.save()
 
-        return Response(
-            {"detail": "Account activated successfully."},
-            status=status.HTTP_200_OK,
-        )
+        return redirect("http://127.0.0.1:5500/")
+        
