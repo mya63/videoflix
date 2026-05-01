@@ -1,9 +1,9 @@
 # 🎬 Videoflix Backend
 
-## 📌 Projektbeschreibung
+## 📌 Project Description
 
-Videoflix ist ein Video-Streaming Backend mit Django REST Framework.  
-Videos werden hochgeladen, automatisch in HLS konvertiert und im Frontend abgespielt.
+Videoflix is a video streaming backend built with Django REST Framework.  
+Users can upload videos, which are automatically converted into HLS format and streamed in the frontend.
 
 ---
 
@@ -11,9 +11,9 @@ Videos werden hochgeladen, automatisch in HLS konvertiert und im Frontend abgesp
 
 - 🔐 User Authentication (Register, Login, Logout, Activation)
 - 🎬 Video Upload
-- ⚡ Background Processing mit Redis + RQ
-- 🎥 Automatische HLS Konvertierung (480p, 720p, 1080p)
-- 📡 Streaming über `.m3u8`
+- ⚡ Background Processing with Redis + RQ
+- 🎥 Automatic HLS Conversion (480p, 720p, 1080p)
+- 📡 Streaming via `.m3u8`
 - 🍪 JWT Authentication via Cookies
 - 🐳 Docker Setup
 
@@ -33,14 +33,34 @@ Videos werden hochgeladen, automatisch in HLS konvertiert und im Frontend abgesp
 
 ## 🚀 Setup
 
-### 1. Projekt klonen
+### 1. Clone the repository
 
 ```bash
 git clone <repo-url>
 cd videoflix
 ````
 
-### 2. Docker starten
+### 2. Environment Variables
+
+Create a `.env` file by copying the template:
+
+```bash
+cp .env.template .env
+```
+
+Then open the `.env` file and fill in your own values, for example:
+
+* Django secret key
+* database configuration
+* email settings
+* allowed hosts
+* CSRF trusted origins
+
+The project will not run correctly without a configured `.env` file.
+
+---
+
+### 3. Start Docker
 
 ```bash
 docker compose up --build
@@ -52,54 +72,54 @@ docker compose up --build
 
 ### 🔐 Authentication
 
-| Endpoint                       | Method | Beschreibung       |
-| ------------------------------ | ------ | ------------------ |
-| `/api/register/`               | POST   | User registrieren  |
-| `/api/login/`                  | POST   | Login + Tokens     |
-| `/api/logout/`                 | POST   | Logout             |
-| `/api/token/refresh/`          | POST   | Token erneuern     |
-| `/api/activate/<uid>/<token>/` | GET    | Account aktivieren |
+| Endpoint                       | Method | Description      |
+| ------------------------------ | ------ | ---------------- |
+| `/api/register/`               | POST   | Register user    |
+| `/api/login/`                  | POST   | Login + tokens   |
+| `/api/logout/`                 | POST   | Logout           |
+| `/api/token/refresh/`          | POST   | Refresh token    |
+| `/api/activate/<uid>/<token>/` | GET    | Activate account |
 
 ---
 
 ### 🎬 Videos
 
-| Endpoint      | Method | Beschreibung       |
-| ------------- | ------ | ------------------ |
-| `/api/video/` | GET    | Liste aller Videos |
-| `/api/video/` | POST   | Video hochladen    |
+| Endpoint      | Method | Description     |
+| ------------- | ------ | --------------- |
+| `/api/video/` | GET    | List all videos |
+| `/api/video/` | POST   | Upload video    |
 
 ---
 
 ### 📺 Streaming (HLS)
 
-| Endpoint                                    | Beschreibung |
-| ------------------------------------------- | ------------ |
-| `/api/video/<id>/<resolution>/index.m3u8`   | Playlist     |
-| `/api/video/<id>/<resolution>/<segment>.ts` | Segmente     |
+| Endpoint                                    | Description |
+| ------------------------------------------- | ----------- |
+| `/api/video/<id>/<resolution>/index.m3u8`   | Playlist    |
+| `/api/video/<id>/<resolution>/<segment>.ts` | Segments    |
 
 ---
 
 ## 🔄 Video Processing
 
-Nach Upload wird automatisch:
+After upload, the following steps happen automatically:
 
-1. Video gespeichert
-2. Hintergrund-Job gestartet (RQ Worker)
-3. FFmpeg konvertiert in:
+1. Video is saved
+2. Background job is started (RQ worker)
+3. FFmpeg converts video into:
 
    * 480p
    * 720p
    * 1080p
-4. HLS Dateien erzeugt (`.m3u8` + `.ts`)
+4. HLS files are generated (`.m3u8` + `.ts`)
 
 ---
 
-## 🧪 Testen
+## 🧪 Testing
 
-### Frontend starten
+### Start Frontend
 
-Frontend der Akademie lokal öffnen (z. B. mit Live Server):
+Open the academy frontend locally (e.g. with Live Server):
 
 ```text
 http://127.0.0.1:5500
@@ -108,14 +128,14 @@ http://127.0.0.1:5500
 ### Test Flow
 
 1. Register
-2. Activate Account
+2. Activate account (via email)
 3. Login
-4. Videos laden
-5. Video abspielen
+4. Load videos
+5. Play video
 
 ---
 
-## 📁 Projektstruktur
+## 📁 Project Structure
 
 ```
 videoflix/
@@ -130,11 +150,11 @@ videoflix/
 
 ---
 
-## 📌 Hinweise
+## 📌 Notes
 
-* HLS Endpoints sind öffentlich (kein Auth), damit Streaming funktioniert
-* API Endpoints sind geschützt (JWT Cookie Auth)
-* Redis + Worker müssen laufen für Video Processing
+* HLS endpoints are public (no authentication required for streaming)
+* API endpoints are protected (JWT cookie authentication)
+* Redis + worker must be running for video processing
 
 ---
 
@@ -143,11 +163,11 @@ videoflix/
 * Authentication ✅
 * Video Upload ✅
 * HLS Streaming ✅
-* Frontend Verbindung ✅
+* Frontend Integration ✅
 
 ---
 
-## 👨‍💻 Autor
+## 👨‍💻 Author
 
 Muhammed Yunus Amini
 
