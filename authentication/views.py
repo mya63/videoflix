@@ -13,6 +13,8 @@ from django.shortcuts import redirect
 from django.contrib.auth.password_validation import validate_password
 from django.core.mail import send_mail
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 
 from .serializers import LoginSerializer, RegisterSerializer
 
@@ -246,13 +248,20 @@ class PasswordResetView(generics.GenericAPIView):
             f"/api/password_confirm/{uidb64}/{token}/"
         )
 
-        send_mail(
-            subject="Reset your password",
-            message=f"Click here to reset your password: {reset_link}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
+        html_content = render_to_string(
+            "emails/password_reset_email.html",
+            {"reset_link": reset_link},
         )
+
+        email_message = EmailMultiAlternatives(
+            subject="Reset your Videoflix password",
+            body=f"Click here to reset your password: {reset_link}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[user.email],
+        )
+
+        email_message.attach_alternative(html_content, "text/html")
+        email_message.send()
 
         return Response(
             {"detail": "An email has been sent to reset your password."},
@@ -264,6 +273,11 @@ class PasswordConfirmView(generics.GenericAPIView):
     permission_classes = []
     authentication_classes = []
     serializer_class = None
+
+    def get(self, request, uidb64, token):
+        return redirect(
+            f"http://127.0.0.1:5500/pages/auth/confirm_password.html?uid={uidb64}&token={token}"
+        )
 
     def post(self, request, uidb64, token):
         new_password = request.data.get("new_password")
