@@ -1,17 +1,17 @@
 services:
-
   db:
-    image: postgres:latest
+    image: postgres:15
     container_name: videoflix_database
+    env_file: .env
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
 
   redis:
-    image: redis:latest
+    image: redis:7
     container_name: videoflix_redis
     volumes:
       - redis_data:/data
@@ -22,8 +22,6 @@ services:
       dockerfile: backend.Dockerfile
     env_file: .env
     container_name: videoflix_backend
-    command: python manage.py runserver 0.0.0.0:8000
-
     volumes:
       - .:/app
       - videoflix_media:/app/media
@@ -32,9 +30,12 @@ services:
       - "8000:8000"
     environment:
       - PYTHONUNBUFFERED=1
+      - RUN_MIGRATIONS=true
     depends_on:
       - db
       - redis
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000 --reload
+
   worker:
     build:
       context: .
@@ -45,14 +46,13 @@ services:
       - .:/app
       - videoflix_media:/app/media
       - videoflix_static:/app/static
-    command: python manage.py rqworker default
     depends_on:
       - db
       - redis
-      - web
-
-
-
+    command: python manage.py rqworker default
+    environment:
+      - PYTHONUNBUFFERED=1
+      - RUN_MIGRATIONS=false
 
 volumes:
   postgres_data:
