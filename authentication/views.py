@@ -10,6 +10,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 import django_rq
 from .tasks import send_activation_email
 from django.shortcuts import redirect
+from django.contrib.auth.password_validation import validate_password
+from django.core.mail import send_mail
+from django.conf import settings
 
 from .serializers import LoginSerializer, RegisterSerializer
 
@@ -213,4 +216,86 @@ class ActivateView(generics.GenericAPIView):
         user.save()
 
         return redirect("http://127.0.0.1:5500/")
+    
+class PasswordResetView(generics.GenericAPIView):
+    permission_classes = []
+    authentication_classes = []
+    serializer_class = None
+
+    def post(self, request):
+        email = request.data.get("email")
+
+        if not email:
+            return Response(
+                {"email": "This field is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                {"email": "No user with this email exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
+        reset_link = request.build_absolute_uri(
+            f"/api/password_confirm/{uidb64}/{token}/"
+        )
+
+        send_mail(
+            subject="Reset your password",
+            message=f"Click here to reset your password: {reset_link}",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,
+        )
+
+        return Response(
+            {"detail": "An email has been sent to reset your password."},
+            status=status.HTTP_200_OK,
+        )
+
+
+class PasswordConfirmView(generics.GenericAPIView):
+    permission_classes = []
+    authentication_classes = []
+    serializer_class = None
+
+    def post(self, request, uidb64, token):
+        new_password = request.data.get("new_password")
+        confirm_password = request.data.get("confirm_password")
+
+        if new_password != confirm_password:
+            return Response(
+                {"confirm_password": "Passwords do not match."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            user_id = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=user_id)
+        except (User.DoesNotExist, ValueError, TypeError):
+            return Response(
+                {"detail": "Invalid password reset link."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not default_token_generator.check_token(user, token):
+            return Response(
+                {"detail": "Invalid password reset link."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        validate_password(new_password, user)
+        user.set_password(new_password)
+        user.save()
+
+        return Response(
+            {"detail": "Your Password has been successfully reset."},
+            status=status.HTTP_200_OK,
+        )
         
