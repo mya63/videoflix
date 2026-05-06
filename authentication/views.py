@@ -1,20 +1,25 @@
+import django_rq
+
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.password_validation import validate_password
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rq import queue
-from authentication.tasks import send_activation_email
-from rest_framework_simplejwt.tokens import RefreshToken
-import django_rq
-from .tasks import send_activation_email
 from django.shortcuts import redirect
-from django.contrib.auth.password_validation import validate_password
+from django.core.mail import EmailMultiAlternatives
 from django.core.mail import send_mail
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from authentication.tasks import send_activation_email
+
+from rq import queue
+
+from .tasks import send_activation_email
 
 from .serializers import LoginSerializer, RegisterSerializer
 

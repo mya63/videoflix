@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 
 from .models import Video
+
 from .services import create_thumbnail, convert_to_hls
 
 
