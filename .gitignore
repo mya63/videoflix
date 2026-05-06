@@ -3,5 +3,14 @@ venv/
 __pycache__/
 *.pyc
 db.sqlite3
-media/
 node_modules/
+
+# Media
+media/videos/*_hls/
+media/videos/*.ts
+media/videos/*.m3u8
+media/videos/*.mp4
+media/videos/*.jpg
+
+# Default thumbnail behalten
+!media/videos/default_thumbnail.jpg

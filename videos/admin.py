@@ -1,5 +1,9 @@
+import django_rq
+
 from django.contrib import admin
+
 from .models import Video
+from .tasks import create_video_thumbnail
 
 
 @admin.register(Video)
@@ -14,3 +18,21 @@ class VideoAdmin(admin.ModelAdmin):
         "hls_720p",
         "hls_1080p",
     )
+
+    def save_model(self, request, obj, form, change):
+        """
+        Saves the video and only regenerates the thumbnail
+        when the thumbnail was removed in admin.
+        """
+
+        old_thumbnail = None
+
+        if change:
+            old_video = Video.objects.get(pk=obj.pk)
+            old_thumbnail = old_video.thumbnail
+
+        super().save_model(request, obj, form, change)
+
+        if change and old_thumbnail and not obj.thumbnail:
+            queue = django_rq.get_queue("default")
+            queue.enqueue(create_video_thumbnail, obj.id)
