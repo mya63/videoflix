@@ -23,18 +23,20 @@ class VideoListSerializer(serializers.ModelSerializer):
 
     def get_thumbnail_url(self, obj):
         """
-        Returns the absolute thumbnail URL if a request context is available.
+        Returns the thumbnail URL or a fallback if no thumbnail exists.
         """
 
         request = self.context.get("request")
 
-        if not obj.thumbnail:
-            return None
+        if obj.thumbnail:
+            url = obj.thumbnail.url
+        else:
+            url = "/media/videos/default_thumbnail.jpg"
 
         if request:
-            return request.build_absolute_uri(obj.thumbnail.url)
+            return request.build_absolute_uri(url)
 
-        return obj.thumbnail.url
+        return url
 
 
 class VideoCreateSerializer(serializers.ModelSerializer):

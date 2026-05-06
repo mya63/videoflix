@@ -6,9 +6,21 @@ class Video(models.Model):
     Stores uploaded videos and generated HLS file references.
     """
 
+    CATEGORY_CHOICES = [
+        ("nature", "Nature"),
+        ("education", "Education"),
+        ("entertainment", "Entertainment"),
+        ("sports", "Sports"),
+        ("documentary", "Documentary"),
+    ]
+
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    category = models.CharField(max_length=100, blank=True)
+    category = models.CharField(
+        max_length=50,
+        choices=CATEGORY_CHOICES,
+        default="entertainment",
+    )
 
     video_file = models.FileField(upload_to="videos/")
     thumbnail = models.ImageField(upload_to="thumbnails/", blank=True, null=True)

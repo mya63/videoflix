@@ -1,6 +1,5 @@
 import os
 
-import django_rq
 from django.http import FileResponse, Http404
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
@@ -8,7 +7,6 @@ from rest_framework.views import APIView
 
 from .models import Video
 from .serializers import VideoCreateSerializer, VideoListSerializer
-from .tasks import process_video
 
 
 class VideoListCreateView(generics.ListCreateAPIView):
@@ -28,15 +26,6 @@ class VideoListCreateView(generics.ListCreateAPIView):
             return VideoCreateSerializer
 
         return VideoListSerializer
-
-    def perform_create(self, serializer):
-        """
-        Saves the uploaded video and starts background processing with RQ.
-        """
-
-        video = serializer.save()
-        queue = django_rq.get_queue("default")
-        queue.enqueue(process_video, video.id)
 
 
 class HLSPlaylistView(APIView):
@@ -92,12 +81,11 @@ def get_hls_file_path(video, resolution, filename):
     Builds the absolute file path for an HLS playlist or segment file.
     """
 
-    base_path = video.video_file.path
-    base, _ = os.path.splitext(base_path)
-
-    hls_dir = f"{base}_{resolution}_hls"
-
     if resolution not in ["480p", "720p", "1080p"]:
         raise Http404("Resolution not found")
+
+    base_path = video.video_file.path
+    base, _ = os.path.splitext(base_path)
+    hls_dir = f"{base}_{resolution}_hls"
 
     return os.path.join(hls_dir, filename)

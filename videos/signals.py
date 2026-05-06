@@ -1,5 +1,5 @@
 import django_rq
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
 from .models import Video
@@ -12,9 +12,11 @@ def video_created(sender, instance, created, **kwargs):
     Starts video processing after a new video was uploaded.
     """
 
-    if created:
-        queue = django_rq.get_queue("default")
-        queue.enqueue(process_video, instance.id)
+    if not created:
+        return
+
+    queue = django_rq.get_queue("default")
+    queue.enqueue(process_video, instance.id)
 
 
 @receiver(post_delete, sender=Video)
@@ -23,5 +25,4 @@ def video_deleted(sender, instance, **kwargs):
     Handles cleanup logic after a video was deleted.
     """
 
-    # Placeholder for future file cleanup logic.
     pass
