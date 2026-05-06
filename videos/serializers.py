@@ -51,4 +51,5 @@ class VideoCreateSerializer(serializers.ModelSerializer):
             "description",
             "category",
             "video_file",
+            "thumbnail",
         ]

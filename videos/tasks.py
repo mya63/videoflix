@@ -19,16 +19,20 @@ def get_media_path(file_path):
 
 def process_video(video_id):
     """
-    Creates a thumbnail, converts the video to HLS and updates generated file paths.
+    Converts the video to HLS and only creates a thumbnail
+    if no custom thumbnail was uploaded.
     """
 
     video = Video.objects.get(id=video_id)
     video_path = video.video_file.path
 
-    thumbnail_path = create_thumbnail(video_path)
-    hls_paths = convert_to_hls(video_path)
+    if video.thumbnail:
+        thumbnail = video.thumbnail.name
+    else:
+        thumbnail_path = create_thumbnail(video_path)
+        thumbnail = os.path.relpath(thumbnail_path, settings.MEDIA_ROOT).replace("\\", "/")
 
-    thumbnail = os.path.relpath(thumbnail_path, settings.MEDIA_ROOT).replace("\\", "/")
+    hls_paths = convert_to_hls(video_path)
 
     Video.objects.filter(id=video_id).update(
         thumbnail=thumbnail,
@@ -37,7 +41,7 @@ def process_video(video_id):
         hls_1080p=get_media_path(hls_paths["1080p"]),
         hls_playlist=get_media_path(hls_paths["720p"]),
     )
-
+        
 def create_video_thumbnail(video_id):
     """
     Creates only a new thumbnail without converting the video again.
