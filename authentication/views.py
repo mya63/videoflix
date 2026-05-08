@@ -1,4 +1,3 @@
-import django_rq
 
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -14,10 +13,6 @@ from django.template.loader import render_to_string
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-
-from authentication.tasks import send_activation_email
-
-from rq import queue
 
 from .tasks import send_activation_email
 
@@ -48,8 +43,7 @@ class RegisterView(generics.CreateAPIView):
             f"/api/activate/{uidb64}/{token}/"
     )
         
-        queue = django_rq.get_queue("default")
-        queue.enqueue(send_activation_email, user.email, activation_link)
+        send_activation_email(user.email, activation_link)
 
         return Response(
             {
