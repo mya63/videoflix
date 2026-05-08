@@ -1,4 +1,3 @@
-import django_rq
 
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
@@ -16,8 +15,7 @@ def video_created(sender, instance, created, **kwargs):
     if not created:
         return
 
-    queue = django_rq.get_queue("default")
-    queue.enqueue(process_video, instance.id)
+    process_video(instance.id)
 
 
 @receiver(post_delete, sender=Video)

@@ -34,5 +34,4 @@ class VideoAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
         if change and old_thumbnail and not obj.thumbnail:
-            queue = django_rq.get_queue("default")
-            queue.enqueue(create_video_thumbnail, obj.id)
+            create_video_thumbnail(obj.id)
