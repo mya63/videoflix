@@ -216,7 +216,7 @@ class ActivateView(generics.GenericAPIView):
         user.is_active = True
         user.save()
 
-        return redirect("http://127.0.0.1:5500/")
+        return redirect("https://mya63.github.io/project.Videoflix/")
     
 class PasswordResetView(generics.GenericAPIView):
     permission_classes = []
@@ -275,7 +275,7 @@ class PasswordConfirmView(generics.GenericAPIView):
 
     def get(self, request, uidb64, token):
         return redirect(
-            f"http://127.0.0.1:5500/pages/auth/confirm_password.html?uid={uidb64}&token={token}"
+            f"https://mya63.github.io/project.Videoflix/pages/auth/confirm_password.html?uid={uidb64}&token={token}"
         )
 
     def post(self, request, uidb64, token):
