@@ -96,7 +96,7 @@ class LoginView(generics.GenericAPIView):
             httponly=True,
             secure=True,
             samesite="None",
-            domain=".onrender.com",
+            
         )
 
         response.set_cookie(
@@ -105,7 +105,7 @@ class LoginView(generics.GenericAPIView):
             httponly=True,
             secure=True,
             samesite="None",
-            domain=".onrender.com",
+            
         )
 
         return response
@@ -187,7 +187,6 @@ class CookieTokenRefreshView(generics.GenericAPIView):
             httponly=True,
             secure=True,
             samesite="None",
-            domain=".onrender.com",
         )
 
         return response
