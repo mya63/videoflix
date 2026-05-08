@@ -91,6 +91,6 @@ def convert_to_hls(video_path):
 
     return {
         "480p": convert_to_hls_quality(video_path, "480p", 480),
-        "720p": convert_to_hls_quality(video_path, "720p", 720),
-        "1080p": convert_to_hls_quality(video_path, "1080p", 1080),
+        #"720p": convert_to_hls_quality(video_path, "720p", 720),
+        #"1080p": convert_to_hls_quality(video_path, "1080p", 1080),
     }
