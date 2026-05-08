@@ -141,8 +141,8 @@ class LogoutView(generics.GenericAPIView):
             status=status.HTTP_200_OK,
         )
 
-        response.delete_cookie("access_token")
-        response.delete_cookie("refresh_token")
+        response.delete_cookie("access_token", samesite="None")
+        response.delete_cookie("refresh_token", samesite="None")
 
         return response
 
