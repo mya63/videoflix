@@ -154,11 +154,10 @@ MEDIA_ROOT = BASE_DIR / "media"
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
-    
-]
+CORS_ALLOWED_ORIGINS = os.environ.get(
+    "CORS_ALLOWED_ORIGINS",
+    default="http://localhost:5500,http://127.0.0.1:5500",
+).split(",")
 
 CORS_ALLOW_CREDENTIALS = True
 
