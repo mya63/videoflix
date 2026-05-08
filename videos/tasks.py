@@ -37,9 +37,9 @@ def process_video(video_id):
     Video.objects.filter(id=video_id).update(
         thumbnail=thumbnail,
         hls_480p=get_media_path(hls_paths["480p"]),
-        hls_720p=get_media_path(hls_paths["720p"]),
-        hls_1080p=get_media_path(hls_paths["1080p"]),
-        hls_playlist=get_media_path(hls_paths["720p"]),
+        #hls_720p=get_media_path(hls_paths["720p"]),
+        #hls_1080p=get_media_path(hls_paths["1080p"]),
+        #hls_playlist=get_media_path(hls_paths["720p"]),
     )
         
 def create_video_thumbnail(video_id):
