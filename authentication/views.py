@@ -94,12 +94,16 @@ class LoginView(generics.GenericAPIView):
             key="access_token",
             value=str(refresh.access_token),
             httponly=True,
+            secure=True,
+            samesite="None",
         )
 
         response.set_cookie(
             key="refresh_token",
             value=str(refresh),
             httponly=True,
+            secure=True,
+            samesite="None",
         )
 
         return response
@@ -179,6 +183,8 @@ class CookieTokenRefreshView(generics.GenericAPIView):
             key="access_token",
             value=str(refresh.access_token),
             httponly=True,
+            secure=True,
+            samesite="None",
         )
 
         return response
